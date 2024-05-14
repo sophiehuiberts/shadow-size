@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # coding: utf-8
 import math
-import random
 
 # main code used to verify the construction works as intended, and to measure
 # the actual lower bound that could be obtained from our construction
@@ -211,13 +210,17 @@ def estimate(model,x,y,k=0):
 #shiftedP(k).write('construction-' + str(k) + '.lp')
 
 import matplotlib.pyplot as plt
+plt.rcParams.update({
+    "text.usetex": True,
+})
 fig = plt.figure()
 ax1 = fig.add_subplot(111)
 plt.title('measured quality of lower bound')
 plt.ylabel('shadow size')
-plt.xlabel('sigma')
+plt.xlabel('$\sigma$')
 ax1.set_yscale('log')
 ax1.set_xscale('log')
+ax1.set_ylim(10, 10**8)
 
 
 # estimated 64*11min=12 hours of calculation here :')
@@ -228,7 +231,7 @@ stepcount = 20
 print('krange',krange)
 print('stepcount', stepcount)
 
-smallestsigma = 0.01* (2**(-max(krange)))
+smallestsigma = 0.0001* (2**(-max(krange)))
 stepsize = (biggestsigma/smallestsigma)**(1/(stepcount-1))
 
 # reference line
@@ -238,7 +241,8 @@ for i in range(stepcount):
     sigma = smallestsigma * (stepsize**i)
     refxs.append(sigma)
     refys.append(sigma**(-3/4))
-ax1.plot(refxs,refys,label="y=x^(-3/4)")
+
+ax1.plot(refxs,refys,label="$\sigma^{-3/4}$",color="black")
 
 # actual data
 for k in krange:
@@ -269,11 +273,11 @@ for k in krange:
         shadowsize, minimum, maximum = estimate(perturbedmodel, variables[0], variables[1],k)
         xs.append(sigma)
         ys.append(shadowsize)
-    label = "measurements for k={}".format(k)
+    label = "measurements for $k={}$".format(k)
     ax1.scatter(xs,ys,label=label)
     with open("measurements-k{}.csv".format(k), 'w') as f:
         for i in range(len(xs)):
             f.write("{},{}\n".format(xs[i],ys[i]))
 plt.legend(loc='upper right')
-plt.savefig('coolplot.pdf')
+plt.savefig('measurements.pdf')
 #plt.show()
